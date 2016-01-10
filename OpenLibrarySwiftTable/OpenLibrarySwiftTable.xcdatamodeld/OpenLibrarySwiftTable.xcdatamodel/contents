@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="Test1.xcdatamodel" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1" systemVersion="11A491" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
-    <elements/>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9525" systemVersion="15C50" minimumToolsVersion="Automatic">
+    <entity name="Autor" syncable="YES">
+        <attribute name="nombre" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="escribe" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Libro" inverseName="tiene" inverseEntity="Libro" syncable="YES"/>
+    </entity>
+    <entity name="Libro" syncable="YES">
+        <attribute name="isbn" attributeType="String" indexed="YES" syncable="YES"/>
+        <attribute name="portada" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="titulo" attributeType="String" syncable="YES"/>
+        <relationship name="tiene" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Autor" inverseName="escribe" inverseEntity="Autor" syncable="YES"/>
+    </entity>
+    <fetchRequest name="getLibroPorIsbn" entity="Libro" predicateString="isbn == $isbn"/>
+    <fetchRequest name="getLibros" entity="Libro"/>
+    <elements>
+        <element name="Libro" positionX="-45" positionY="0" width="128" height="105"/>
+        <element name="Autor" positionX="-18" positionY="54" width="128" height="75"/>
+    </elements>
 </model>

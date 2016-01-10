@@ -7,11 +7,15 @@
 //
 
 import UIKit
+import CoreData
 
 class DetalleVC: UIViewController {
     
     var isbn : String = ""
+    var contexto : NSManagedObjectContext? = nil
 
+    @IBOutlet weak var lblIsbn: UILabel!
+    
     @IBOutlet weak var lblTitulo: UILabel!
     
     @IBOutlet weak var lblAutor: UILabel!
@@ -22,7 +26,44 @@ class DetalleVC: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        buscar(isbn)
+        
+        self.contexto = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+        
+        lblIsbn.text = isbn
+        obtenerLibro()
+    }
+    
+    func obtenerLibro(){
+        let EntidadLibro = NSEntityDescription.entityForName("Libro", inManagedObjectContext: self.contexto!)
+        let consulta = EntidadLibro?.managedObjectModel.fetchRequestFromTemplateWithName("getLibroPorIsbn", substitutionVariables: ["isbn":self.isbn])
+        do{
+            let Libro = try self.contexto?.executeFetchRequest(consulta!)
+            if(Libro!.count>0){
+                
+                let titulo = Libro![0].valueForKey("titulo") as! String
+                self.lblTitulo.text = titulo
+                
+                let portada = Libro![0].valueForKey("portada")
+                if(portada != nil){
+                    self.imgPortada.image = UIImage(data: portada as! NSData)
+                }
+                
+                var autores = [String]()
+                let Autores = Libro![0].valueForKey("tiene") as! Set<NSObject>
+                for Autor in Autores{
+                    let nombre = Autor.valueForKey("nombre") as! String
+                    autores.append(nombre)
+                }
+                
+                lblAutor.text=autores.joinWithSeparator("\n")
+                
+                return // No hace falta obtener nada mas
+            }
+        }
+        catch{
+            print("Error getLibroPorIsbn")
+        }
+
     }
 
     override func didReceiveMemoryWarning() {
@@ -30,6 +71,7 @@ class DetalleVC: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    /*
     func buscar(isbn : String) {
         
         let urls = "https://openlibrary.org/api/books?jscmd=data&format=json&bibkeys=ISBN:\(isbn)"
@@ -98,7 +140,7 @@ class DetalleVC: UIViewController {
         let image=UIImage(data: data!)
         imgPortada.image=image
     }
-
+    */
     
 
     /*

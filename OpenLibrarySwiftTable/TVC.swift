@@ -7,10 +7,13 @@
 //
 
 import UIKit
+import CoreData
 
 var libros : Array<Array<String>> = Array<Array<String>>()
 
 class TVC: UITableViewController {
+    
+    var contexto : NSManagedObjectContext? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,11 +26,28 @@ class TVC: UITableViewController {
         
         self.title = "OpenLibrary"
         
+        self.contexto = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+        //Obtener los libros guardados
+        let librosEntidad = NSEntityDescription.entityForName("Libro", inManagedObjectContext: self.contexto!)
+        let getLibros = librosEntidad?.managedObjectModel.fetchRequestTemplateForName("getLibros")
+        do{
+            let librosEntidad2 = try self.contexto?.executeFetchRequest(getLibros!)
+            for libro in librosEntidad2! {
+                let isbn = libro.valueForKey("isbn") as! String
+                let titulo = libro.valueForKey("titulo") as! String
+                libros.append([titulo,isbn])
+            }
+        }
+        catch {
+            print("Error al obtener los libros")
+        }
     }
     
     override func viewDidAppear(animated: Bool) {
         self.tableView.reloadData()
     }
+    
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
